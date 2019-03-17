@@ -14,13 +14,17 @@ import (
 func main() {
 	// constant start and end years
 	const start_year int = 71
-	const end_year int = 100
+	const end_year int = 105
 
 	// for each year
 	for i := start_year; i < end_year; i++ {
-		pageURL := fmt.Sprintf("https://www.robertchristgau.com/xg/pnj/pjres%d.php", i)
+		year := fmt.Sprintf("%d", i%100)
+		if len(string(year)) == 1 {
+			year = "0" + year // not efficient but it's not a huge deal in this case
+		}
+		pageURL := fmt.Sprintf("https://www.robertchristgau.com/xg/pnj/pjres%s.php", year)
 
-		fmt.Printf("Pazz and Jop Poll, '%d\n", i)
+		fmt.Printf("Pazz and Jop Poll, '%s\n", year)
 		// get the page
 		response, err := http.Get(pageURL)
 		if err != nil {
@@ -46,7 +50,7 @@ func main() {
 
 // on that postgresql grind
 func putAlbumIntoDatabase(i int, selection *goquery.Selection) {
-	db, err := sql.Open("postgres", /*put db info here*/)
+	db, err := sql.Open("postgres", /* put db info here */)
 	if err != nil {
 		log.Fatal(err)
 	}
